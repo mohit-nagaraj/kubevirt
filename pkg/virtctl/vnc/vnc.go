@@ -20,6 +20,7 @@
 package vnc
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -89,7 +90,9 @@ func NewCommand() *cobra.Command {
 type VNC struct{}
 
 func (o *VNC) Run(cmd *cobra.Command, args []string) error {
-	virtCli, namespace, _, err := clientconfig.ClientAndNamespaceFromContext(cmd.Context())
+	ctx, cancel := context.WithCancel(cmd.Context())
+	defer cancel()
+	virtCli, namespace, _, err := clientconfig.ClientAndNamespaceFromContext(ctx)
 	if err != nil {
 		return err
 	}
@@ -200,9 +203,12 @@ func (o *VNC) Run(cmd *cobra.Command, args []string) error {
 		interrupt := make(chan os.Signal, 1)
 		signal.Notify(interrupt, os.Interrupt)
 		<-interrupt
+		cancel()
 	}()
 
 	select {
+	case <-ctx.Done():
+		err = ctx.Err()
 	case <-stopChan:
 	case err = <-readStop:
 	case err = <-writeStop:
