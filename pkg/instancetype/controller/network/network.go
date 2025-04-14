@@ -1,5 +1,6 @@
 package network
 
+//go:generate mockgen -source $GOFILE -package=$GOPACKAGE -destination=generated_mock_$GOFILE
 import (
 	"k8s.io/client-go/tools/cache"
 
@@ -10,6 +11,10 @@ import (
 	preferenceapply "kubevirt.io/kubevirt/pkg/instancetype/preference/apply"
 	preferencefind "kubevirt.io/kubevirt/pkg/instancetype/preference/find"
 )
+
+type Controller interface {
+	ApplyInterfacePreferencesToVMI(vm *virtv1.VirtualMachine, spec *virtv1.VirtualMachineInstanceSpec) *virtv1.VirtualMachineInstanceSpec
+}
 
 type finder interface {
 	FindPreference(*virtv1.VirtualMachine) (*v1beta1.VirtualMachinePreferenceSpec, error)
