@@ -123,7 +123,7 @@ func NewCommand() *cobra.Command {
 func withNewMacAddresses(c *createClone, cloneSpec *cloneSpec) error {
 	for _, param := range c.newMacAddresses {
 		splitParam := strings.Split(param, ":")
-		if len(splitParam) != 2 {
+		if len(splitParam) != expectedMacAddressParts {
 			return fmt.Errorf("newMacAddress parameter %s is invalid: exactly one ':' is expected. For example: 'interface0:address0'", param)
 		}
 
@@ -265,7 +265,10 @@ func (c *createClone) run(cmd *cobra.Command, _ []string) error {
 	return nil
 }
 
-func (c *createClone) typeToTypedLocalObjectReference(sourceOrTargetType, sourceOrTargetName string, isSource bool) (*v1.TypedLocalObjectReference, error) {
+func (c *createClone) typeToTypedLocalObjectReference(
+	sourceOrTargetType, sourceOrTargetName string,
+	isSource bool,
+) (*v1.TypedLocalObjectReference, error) {
 	const (
 		virtualMachineKind         = "VirtualMachine"
 		virtualMachineSnapshotKind = "VirtualMachineSnapshot"

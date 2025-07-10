@@ -64,27 +64,31 @@ var _ = Describe("create clone", func() {
 	})
 
 	Context("source and target", func() {
-		DescribeTable("supported types", func(sourceType, expectedSourceKind, expectedSourceApiGroup, targetType, expectedTargetKind, expectedTargetApiGroup string) {
-			const sourceName, targetName = "source-name", "target-name"
+		DescribeTable(
+			"supported types",
+			func(
+				sourceType, expectedSourceKind, expectedSourceApiGroup, targetType, expectedTargetKind, expectedTargetApiGroup string,
+			) {
+				const sourceName, targetName = "source-name", "target-name"
 
-			flags := addFlag(nil, virtctlclone.SourceNameFlag, sourceName)
-			flags = addFlag(flags, virtctlclone.TargetNameFlag, targetName)
-			flags = addFlag(flags, virtctlclone.SourceTypeFlag, sourceType)
-			flags = addFlag(flags, virtctlclone.TargetTypeFlag, targetType)
+				flags := addFlag(nil, virtctlclone.SourceNameFlag, sourceName)
+				flags = addFlag(flags, virtctlclone.TargetNameFlag, targetName)
+				flags = addFlag(flags, virtctlclone.SourceTypeFlag, sourceType)
+				flags = addFlag(flags, virtctlclone.TargetTypeFlag, targetType)
 
-			cloneObj, err := newCommand(flags...)
-			Expect(err).ToNot(HaveOccurred())
+				cloneObj, err := newCommand(flags...)
+				Expect(err).ToNot(HaveOccurred())
 
-			Expect(cloneObj.Spec.Source.Name).To(Equal(sourceName))
-			Expect(cloneObj.Spec.Source.Kind).To(Equal(expectedSourceKind))
-			Expect(cloneObj.Spec.Source.APIGroup).ToNot(BeNil())
-			Expect(*cloneObj.Spec.Source.APIGroup).To(Equal(expectedSourceApiGroup))
+				Expect(cloneObj.Spec.Source.Name).To(Equal(sourceName))
+				Expect(cloneObj.Spec.Source.Kind).To(Equal(expectedSourceKind))
+				Expect(cloneObj.Spec.Source.APIGroup).ToNot(BeNil())
+				Expect(*cloneObj.Spec.Source.APIGroup).To(Equal(expectedSourceApiGroup))
 
-			Expect(cloneObj.Spec.Target.Name).To(Equal(targetName))
-			Expect(cloneObj.Spec.Target.Kind).To(Equal(expectedTargetKind))
-			Expect(cloneObj.Spec.Target.APIGroup).ToNot(BeNil())
-			Expect(*cloneObj.Spec.Target.APIGroup).To(Equal(expectedTargetApiGroup))
-		},
+				Expect(cloneObj.Spec.Target.Name).To(Equal(targetName))
+				Expect(cloneObj.Spec.Target.Kind).To(Equal(expectedTargetKind))
+				Expect(cloneObj.Spec.Target.APIGroup).ToNot(BeNil())
+				Expect(*cloneObj.Spec.Target.APIGroup).To(Equal(expectedTargetApiGroup))
+			},
 			Entry("vm source, vm target", "vm", vmKind, vmAPIGroup, "vm", vmKind, vmAPIGroup),
 			Entry("VM source, vm target", "VM", vmKind, vmAPIGroup, "vm", vmKind, vmAPIGroup),
 			Entry("VirtualMachine source, vm target", "VirtualMachine", vmKind, vmAPIGroup, "vm", vmKind, vmAPIGroup),
